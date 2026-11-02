@@ -1,0 +1,4 @@
+client,total_rpc,rpc_selesai,rpc_error,siklus_berhasil,siklus_gagal,waktu_s,throughput_rps,latensi_rata2_ms,latensi_p95_ms
+1,600,600,0,200,0,0.349,1718.1,0.57,0.87
+5,600,600,0,200,0,0.133,4511.81,1.08,1.47
+20,600,600,0,200,0,0.139,4326.63,4.4,7.57

@@ -1,0 +1,20 @@
+
+services:
+  server:
+    build: .
+    command: python server.py
+    ports:
+      - "50051:50051"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('127.0.0.1', 50051), timeout=2); s.close()"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+      start_period: 5s
+
+  client:
+    build: .
+    depends_on:
+      server:
+        condition: service_healthy
+    command: python loadtest.py semua --host server

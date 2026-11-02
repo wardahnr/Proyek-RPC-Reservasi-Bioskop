@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package cinema;
+
+// Layanan reservasi kursi bioskop (1 studio, 50 kursi: A1..E10)
+service Bioskop {
+  rpc LihatKursi (Kosong) returns (DenahKursi);                    // unary
+  rpc PesanKursi (PesanKursiRequest) returns (StatusResponse);     // unary, TIDAK idempoten -> request_id
+  rpc BatalkanPesanan (BatalRequest) returns (StatusResponse);     // unary
+  rpc StreamStatusKursi (Kosong) returns (stream PerubahanKursi);  // server streaming
+  rpc GetStatistik (Kosong) returns (Statistik);                   // unary, idempoten
+}
+
+enum StatusKursi {
+  TERSEDIA = 0;
+  TERPESAN = 1;
+}
+
+message Kosong {}
+
+message Kursi {
+  string kursi_id = 1;
+  StatusKursi status = 2;
+  string pemesan = 3;
+}
+
+message DenahKursi {
+  repeated Kursi kursi = 1;
+}
+
+message PesanKursiRequest {
+  string request_id = 1;  // UUID unik per niat pemesanan, sama untuk setiap retry
+  string kursi_id = 2;
+  string pemesan = 3;
+}
+
+message BatalRequest {
+  string kursi_id = 1;
+  string pemesan = 2;     // hanya pemesan asli yang boleh membatalkan
+}
+
+message StatusResponse {
+  bool sukses = 1;
+  string pesan = 2;
+}
+
+message PerubahanKursi {
+  string kursi_id = 1;
+  StatusKursi status = 2;
+  string pemesan = 3;
+  int64 waktu_ms = 4;
+}
+
+message Statistik {
+  int32 total = 1;
+  int32 terpesan = 2;
+  int32 tersedia = 3;
+}
