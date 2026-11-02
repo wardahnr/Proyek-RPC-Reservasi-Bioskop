@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101116">
+    <title>Ruang Layar — Reservasi Kursi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="module" src="/js/app.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Ruang Layar, halaman utama">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M5 8.5h22v15H5zM9 5v7m7-7v7m7-7v7M9 20v7m7-7v7m7-7v7" /></svg>
+          </span>
+          <span>ruang<span class="brand-accent">layar</span><small>RESERVASI BIOSKOP</small></span>
+        </a>
+        <div class="topbar-actions">
+          <span id="connection-status" class="connection-status reconnecting" role="status">
+            <span class="status-dot"></span><span id="connection-label">Menyambung ulang</span>
+          </span>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Ganti tema" title="Ganti tema">
+            <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="intro">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span> STUDIO 01 <span class="intro-separator">/</span> PILIH KURSI</p>
+            <h1>Temukan tempat<br>terbaik <span>untuk cerita.</span></h1>
+            <p class="intro-copy">Pilih kursi favoritmu dan nikmati pengalaman menonton yang tak terlupakan.</p>
+          </div>
+          <div class="movie-badge" aria-label="Pemutaran umum">
+            <span class="movie-badge-icon" aria-hidden="true">✦</span>
+            <span>PEMUTARAN<br><strong>UMUM</strong></span>
+          </div>
+        </section>
+
+        <div id="server-banner" class="server-banner" role="alert" hidden>
+          <span class="banner-icon" aria-hidden="true">!</span>
+          <div><strong>Koneksi ke server terputus</strong><span id="server-banner-message">Kami akan mencoba menyambungkan kembali secara otomatis.</span></div>
+        </div>
+
+        <section class="stats-grid" aria-label="Statistik kursi">
+          <article class="stat-card">
+            <span class="stat-label">TOTAL KURSI</span>
+            <div class="stat-value"><strong id="stat-total">—</strong><span class="stat-symbol">▦</span></div>
+            <span class="stat-note">Dalam studio ini</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">TERPESAN</span>
+            <div class="stat-value"><strong id="stat-booked">—</strong><span class="stat-symbol booked-symbol">●</span></div>
+            <span class="stat-note">Kursi telah dipilih</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">TERSEDIA</span>
+            <div class="stat-value"><strong id="stat-available">—</strong><span class="stat-symbol available-symbol">✦</span></div>
+            <span class="stat-note">Siap untukmu</span>
+          </article>
+          <article class="stat-card occupancy-card">
+            <div class="occupancy-heading"><span class="stat-label">OKUPANSI</span><strong id="occupancy-value">—%</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="Okupansi kursi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="occupancy-bar"></span></div>
+            <span class="stat-note">Kursi yang sudah terisi</span>
+          </article>
+        </section>
+
+        <nav class="tabs" aria-label="Navigasi tampilan">
+          <button class="tab active" id="tab-seatmap" type="button" aria-selected="true">Pilih Kursi</button>
+          <button class="tab" id="tab-activity" type="button" aria-selected="false">Aktivitas <span id="activity-count" class="activity-count">0</span></button>
+        </nav>
+
+        <section id="seatmap-view" class="content-layout" aria-labelledby="seatmap-heading">
+          <div class="seatmap-panel panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">STUDIO 01</p><h2 id="seatmap-heading">Denah tempat duduk</h2></div>
+              <span class="studio-caption">5 BARIS <span>·</span> 10 KOLOM</span>
+            </div>
+            <div class="screen-wrap" aria-label="Layar bioskop">
+              <div class="screen"></div>
+              <span>LAYAR</span>
+            </div>
+            <div class="seatmap-scroll">
+              <div id="seatmap" class="seatmap" aria-label="Denah kursi bioskop"></div>
+            </div>
+            <div class="legend" aria-label="Legenda status kursi">
+              <span><i class="legend-seat available"></i>Tersedia</span>
+              <span><i class="legend-seat booked"></i>Terpesan</span>
+              <span><i class="legend-seat selected"></i>Dipilih</span>
+            </div>
+            <p class="seatmap-hint">Pilih kursi tersedia untuk memesan. Pilih kursi terpesan untuk membatalkan.</p>
+          </div>
+
+          <aside class="booking-panel panel" aria-labelledby="booking-heading">
+            <div class="panel-heading compact-heading">
+              <div><p class="eyebrow">PESANANMU</p><h2 id="booking-heading">Amankan kursimu</h2></div>
+              <span class="ticket-icon" aria-hidden="true">▤</span>
+            </div>
+            <div class="selected-summary">
+              <span>KURSI TERPILIH</span>
+              <strong id="selected-seat">Belum dipilih</strong>
+            </div>
+            <form id="booking-form" novalidate>
+              <label for="booking-name">Nama pemesan</label>
+              <input id="booking-name" name="pemesan" type="text" maxlength="100" autocomplete="name" placeholder="Masukkan nama lengkap">
+              <p id="booking-error" class="inline-error" aria-live="polite"></p>
+              <button id="book-button" class="primary-button" type="submit" disabled>
+                <span class="button-label">Pesan Kursi</span><span class="button-spinner" aria-hidden="true"></span><span aria-hidden="true">→</span>
+              </button>
+            </form>
+            <div class="booking-divider"></div>
+            <div class="booking-note"><span aria-hidden="true">i</span><p>Kursi akan dikonfirmasi langsung. Pemesanan tidak dapat dialihkan ke nama lain.</p></div>
+            <div class="order-summary">
+              <span class="summary-label">RINGKASAN</span>
+              <div><span>Kursi</span><strong id="summary-seat">—</strong></div>
+              <div><span>Nama</span><strong id="summary-name">—</strong></div>
+            </div>
+          </aside>
+        </section>
+
+        <section id="activity-view" class="panel activity-panel" aria-labelledby="activity-heading" hidden>
+          <div class="panel-heading">
+            <div><p class="eyebrow">PEMBARUAN LANGSUNG</p><h2 id="activity-heading">Aktivitas studio</h2></div>
+            <span class="live-pill"><i></i> LANGSUNG</span>
+          </div>
+          <p class="activity-description">Perubahan kursi terbaru di studio ini akan muncul di sini.</p>
+          <ol id="activity-list" class="activity-list" aria-live="polite"></ol>
+          <p id="activity-empty" class="activity-empty">Belum ada aktivitas. Perubahan kursi akan tampil di sini.</p>
+        </section>
+      </main>
+      <footer><span>RUANG LAYAR</span><span>Lebih dekat dengan cerita.</span></footer>
+    </div>
+
+    <dialog id="cancel-dialog" class="cancel-dialog" aria-labelledby="cancel-heading">
+      <form id="cancel-form" method="dialog">
+        <button id="close-dialog" class="dialog-close" type="button" aria-label="Tutup">×</button>
+        <p class="eyebrow">PEMBATALAN PESANAN</p>
+        <h2 id="cancel-heading">Batalkan kursi <span id="cancel-seat"></span>?</h2>
+        <p class="dialog-copy">Masukkan nama pemesan asli untuk mengonfirmasi pembatalan.</p>
+        <label for="cancel-name">Nama pemesan</label>
+        <input id="cancel-name" name="pemesan" type="text" maxlength="100" autocomplete="name" placeholder="Nama yang digunakan saat memesan">
+        <p id="cancel-error" class="inline-error" aria-live="polite"></p>
+        <div class="dialog-actions">
+          <button id="keep-seat" class="secondary-button" type="button">Jangan batalkan</button>
+          <button id="cancel-button" class="danger-button" type="submit"><span class="button-label">Batalkan Pesanan</span><span class="button-spinner" aria-hidden="true"></span></button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>
