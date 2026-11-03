@@ -1,10 +1,7 @@
-
 services:
   server:
     build: .
-    command: python server.py
-    ports:
-      - "50051:50051"
+    command: ["python", "server.py", "--port", "50051"]
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('127.0.0.1', 50051), timeout=2); s.close()"]
       interval: 2s
@@ -12,9 +9,22 @@ services:
       retries: 15
       start_period: 5s
 
-  client:
+  gateway:
     build: .
+    command: ["uvicorn", "gateway.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      GRPC_HOST: server
+      GRPC_PORT: "50051"
+    ports:
+      - "8000:8000"
     depends_on:
       server:
         condition: service_healthy
-    command: python loadtest.py semua --host server
+
+  client:
+    build: .
+    profiles: ["test"]
+    depends_on:
+      server:
+        condition: service_healthy
+    command: ["python", "loadtest.py", "semua", "--host", "server"]
