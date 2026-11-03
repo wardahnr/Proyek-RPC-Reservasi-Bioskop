@@ -1,7 +1,7 @@
 const ROWS = ["A", "B", "C", "D", "E"];
 const COLUMNS = Array.from({ length: 10 }, (_, index) => index + 1);
 
-export function renderSeatmap(container, seats, selectedSeat, onSelect) {
+export function renderSeatmap(container, seats, selectedSeat, onSelect, raceSelectedSeat) {
   const fragment = document.createDocumentFragment();
   const corner = document.createElement("span");
   corner.setAttribute("aria-hidden", "true");
@@ -26,8 +26,9 @@ export function renderSeatmap(container, seats, selectedSeat, onSelect) {
       const button = document.createElement("button");
       const booked = seat.status === "TERPESAN";
       const selected = selectedSeat === id;
+      const raceSelected = raceSelectedSeat === id;
       button.type = "button";
-      button.className = `seat ${booked ? "booked" : "available"}${selected ? " selected" : ""}`;
+      button.className = `seat ${booked ? "booked" : "available"}${selected ? " selected" : ""}${raceSelected ? " race-selected" : ""}`;
       button.dataset.seatId = id;
       button.textContent = String(column);
       button.setAttribute(

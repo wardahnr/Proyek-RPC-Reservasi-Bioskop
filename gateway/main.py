@@ -34,6 +34,7 @@ class ReservasiRequest(BaseModel):
 
 class SimulasiRequest(BaseModel):
     jumlah_client: int = 20
+    kursi_id: str
 
 
 @asynccontextmanager
@@ -228,24 +229,35 @@ async def health():
     except grpc.RpcError as error:
         raise _http_error(error) from error
 
-def _run_race_simulation(jumlah_client: int) -> dict[str, Any]:
-    # Cari satu kursi kosong untuk diperebutkan.
+def _run_race_simulation(
+    jumlah_client: int,
+    kursi_pilihan: str,
+) -> dict[str, Any]:
+    
+    # Gunakan kursi yang dipilih pengguna.
     denah = _stub().LihatKursi(pb.Kosong(), timeout=5)
 
-    kursi_id = next(
+    kursi = next(
         (
-            seat.kursi_id
-            for seat in denah.kursi
-            if seat.status == pb.TERSEDIA
+            seat for seat in denah.kursi
+            if seat.kursi_id == kursi_pilihan
         ),
         None,
     )
 
-    if kursi_id is None:
+    if kursi is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Kursi yang dipilih tidak ditemukan.",
+        )
+
+    if kursi.status != pb.TERSEDIA:
         raise HTTPException(
             status_code=409,
-            detail="Tidak ada kursi tersedia untuk simulasi.",
+            detail="Kursi yang dipilih sudah dipesan. Pilih kursi lain.",
         )
+
+    kursi_id = kursi.kursi_id
 
     # Semua client menunggu di barrier sebelum mengirim RPC.
     barrier = threading.Barrier(jumlah_client + 1, timeout=15)
@@ -467,6 +479,7 @@ async def simulasi_race(request: SimulasiRequest):
         return await run_in_threadpool(
             _run_race_simulation,
             request.jumlah_client,
+            request.kursi_id,
         )
     finally:
         SIMULATION_LOCK.release()

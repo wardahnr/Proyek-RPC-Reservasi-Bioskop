@@ -371,3 +371,66 @@ footer span:first-child { font-weight: 700; }
   }
 }
 
+/* Kursi yang dipilih sebagai target simulasi */
+.seat.race-selected {
+  background-color: #f0ad4e;
+  border: 2px solid #d58512;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(240, 173, 78, 0.25);
+}
+
+/* Tampilan dasar tombol */
+#race-pick-seat-button {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* Saat mode pemilihan kursi aktif */
+#race-pick-seat-button.race-picking-active {
+  background-color: #e9a23b;
+  border: 1px solid #e9a23b;
+  color: #ffffff;
+}
+
+/* Saat kursi berhasil dipilih */
+#race-pick-seat-button.race-seat-button-selected {
+  background-color: #198754;
+  border: 1px solid #198754;
+  color: #ffffff;
+}
+
+/* Efek hover */
+#race-pick-seat-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover tombol hijau */
+#race-pick-seat-button.race-seat-button-selected:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+/* Efek saat tombol oranye ditekan */
+#race-pick-seat-button.race-picking-active:active {
+  background-color: #bd7518;
+  border-color: #ffffff;
+  color: #ffffff;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35);
+  transition: none;
+}
+
+/* Efek saat tombol hijau ditekan */
+#race-pick-seat-button.race-seat-button-selected:active {
+  background-color: #0f5132;
+  border-color: #ffffff;
+  color: #ffffff;
+  transform: translateY(3px) scale(0.97);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4);
+  transition: none;
+}
