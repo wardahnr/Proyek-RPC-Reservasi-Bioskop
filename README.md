@@ -82,3 +82,32 @@ docker compose up --build
 - **Retry**: hanya untuk `DEADLINE_EXCEEDED` dan `UNAVAILABLE`, exponential backoff 0.5/1/2 s.
 - **Keterbatasan**: `proses` ada di memori, sehingga hilang jika server restart
   (perbaikan: simpan ke SQLite/Redis, atau beri TTL).
+
+## 8. Web reservasi
+Pasang dependensi (termasuk FastAPI dan Uvicorn yang sudah ditambahkan ke
+`requirements.txt`), lalu jalankan server gRPC dan gateway pada dua terminal:
+
+Terminal 1:
+```bash
+python server.py
+```
+
+Terminal 2:
+```bash
+uvicorn gateway.main:app --reload --port 8000
+```
+
+Buka [http://localhost:8000](http://localhost:8000). Gateway menyajikan
+antarmuka dari `frontend/` dan meneruskan REST/SSE ke gRPC. Tujuan gRPC dapat
+diubah melalui environment variable `GRPC_HOST` dan `GRPC_PORT` (default
+`localhost:50051`).
+
+### Checklist uji manual
+1. Pesan kursi tersedia dengan nama, lalu pastikan denah dan statistik berubah.
+2. Buka dua tab, pilih kursi yang sama, lalu pesan dari keduanya; hanya satu
+   pemesanan yang berhasil dan tab lain menampilkan pesan kursi sudah dipesan.
+3. Pilih kursi terpesan lalu coba batalkan dengan nama yang salah; pastikan
+   pembatalan ditolak dan kursi tetap terpesan.
+4. Hentikan `server.py`; pastikan banner koneksi muncul dan status live
+   berubah. Jalankan server kembali dan pastikan gateway mencoba menyambung
+   ulang serta denah kembali diperbarui.
