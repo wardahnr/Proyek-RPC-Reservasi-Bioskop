@@ -124,6 +124,63 @@
           </aside>
         </section>
 
+        <section id="race-simulation" class="panel race-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PENGUJIAN SISTEM TERDISTRIBUSI</p>
+              <h2>Simulasi Race Condition</h2>
+            </div>
+            <span class="live-pill">GRPC TEST</span>
+          </div>
+
+          <p class="race-description">
+            Uji beberapa client yang mencoba memesan kursi yang sama secara
+            bersamaan. Hanya satu client yang seharusnya berhasil mendapatkan
+            kursi.
+          </p>
+
+          <form id="race-form" class="race-controls">
+            <div>
+              <label for="race-client-count">Jumlah client</label>
+              <select id="race-client-count" name="jumlah_client">
+                <option value="5">5 Client</option>
+                <option value="10">10 Client</option>
+                <option value="20" selected>20 Client</option>
+              </select>
+            </div>
+
+            <button id="race-run-button" class="primary-button" type="submit">
+              Jalankan Simulasi →
+            </button>
+          </form>
+
+          <div id="race-result" class="race-result" aria-live="polite" hidden>
+            <h3>Hasil Simulasi</h3>
+
+            <div class="race-stats">
+              <div>
+                <strong id="race-success">0</strong>
+                <span>Berhasil</span>
+              </div>
+              <div>
+                <strong id="race-rejected">0</strong>
+                <span>Ditolak</span>
+              </div>
+              <div>
+                <strong id="race-errors">0</strong>
+                <span>Error</span>
+              </div>
+            </div>
+
+            <p id="race-message"></p>
+            <div id="race-details"></div>
+
+            <button id="race-clean-button" class="secondary-button" type="button">
+              Bersihkan Hasil Simulasi
+            </button>
+          </div>
+        </section>
+
         <section id="activity-view" class="panel activity-panel" aria-labelledby="activity-heading" hidden>
           <div class="panel-heading">
             <div><p class="eyebrow">PEMBARUAN LANGSUNG</p><h2 id="activity-heading">Aktivitas studio</h2></div>

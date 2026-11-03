@@ -30,6 +30,16 @@ const elements = {
   serverBannerMessage: document.querySelector("#server-banner-message"),
   activityList: document.querySelector("#activity-list"),
   activityEmpty: document.querySelector("#activity-empty"),
+  raceForm: document.querySelector("#race-form"),
+  raceClientCount: document.querySelector("#race-client-count"),
+  raceResult: document.querySelector("#race-result"),
+  raceRunButton: document.querySelector("#race-run-button"),
+  raceSuccess: document.querySelector("#race-success"),
+  raceRejected: document.querySelector("#race-rejected"),
+  raceErrors: document.querySelector("#race-errors"),
+  raceMessage: document.querySelector("#race-message"),
+  raceDetails: document.querySelector("#race-details"),
+  raceCleanButton: document.querySelector("#race-clean-button"),
 };
 
 function showToast(message, type = "success") {
@@ -207,6 +217,78 @@ function handleError(error) {
   }
   showToast(error.message || "Terjadi kesalahan. Silakan coba lagi.", "error");
 }
+
+function renderRaceResult(result) {
+  elements.raceResult.hidden = false;
+
+  elements.raceSuccess.textContent = result.berhasil;
+  elements.raceRejected.textContent = result.ditolak;
+  elements.raceErrors.textContent = result.error;
+
+  elements.raceMessage.textContent = result.pesan || "Simulasi selesai.";
+
+if (result.pemenang) {
+  elements.raceMessage.textContent += ` Pemenang: ${result.pemenang}.`;
+}
+
+  elements.raceDetails.replaceChildren();
+
+  (result.detail || []).forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "race-detail-item";
+
+    row.textContent = [
+      item.client || item.nama || "Client",
+      item.status || "",
+      item.pesan || "",
+    ].filter(Boolean).join(" — ");
+
+    elements.raceDetails.append(row);
+  });
+
+  elements.raceCleanButton.hidden = !result.dapat_dibersihkan;
+}
+
+// Menjalankan simulasi race condition
+elements.raceForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const jumlahClient = Number(elements.raceClientCount.value);
+
+  elements.raceResult.hidden = true;
+  elements.raceRunButton.disabled = true;
+  elements.raceRunButton.textContent = "Simulasi sedang berjalan...";
+
+  try {
+    const result = await api.simulasiRace(jumlahClient);
+    renderRaceResult(result);
+    showToast(result.pesan || "Simulasi race condition selesai.");
+    await refreshSeats();
+  } catch (error) {
+    handleError(error);
+  } finally {
+    elements.raceRunButton.disabled = false;
+    elements.raceRunButton.textContent = "Jalankan Simulasi →";
+  }
+});
+
+// Membersihkan hasil simulasi
+elements.raceCleanButton.addEventListener("click", async () => {
+  elements.raceCleanButton.disabled = true;
+
+  try {
+    const result = await api.bersihkanSimulasi();
+
+    elements.raceResult.hidden = true;
+
+    showToast(result.pesan || "Hasil simulasi berhasil dibersihkan.");
+    await refreshSeats();
+  } catch (error) {
+    handleError(error);
+  } finally {
+    elements.raceCleanButton.disabled = false;
+  }
+});
 
 function switchTab(activity) {
   document.querySelector("#seatmap-view").hidden = activity;

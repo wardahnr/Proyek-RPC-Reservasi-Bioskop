@@ -36,4 +36,17 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ kursi_id, pemesan }),
     }),
+
+  simulasiRace: (jumlah_client) =>
+    request("/api/simulasi/race", {
+      method: "POST",
+      body: JSON.stringify({ jumlah_client }),
+    }),
+  
+  bersihkanSimulasi: () =>
+    request("/api/simulasi/bersihkan", {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
 };
+
